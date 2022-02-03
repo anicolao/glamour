@@ -29,10 +29,10 @@ func NewMarginWriter(ctx RenderContext, w io.Writer, rules StyleBlock) *MarginWr
 	}
 
 	pw := padding.NewWriterPipe(w, bs.Width(ctx), func(wr io.Writer) {
-		renderText(w, ctx.options.ColorProfile, rules.StylePrimitive, " ")
+		renderText(w, ctx.options.ColorProfile, rules.StylePrimitive, "\u200b ")
 	})
 
-	ic := " "
+	ic := "\u200b "
 	if rules.IndentToken != nil {
 		ic = *rules.IndentToken
 	}
