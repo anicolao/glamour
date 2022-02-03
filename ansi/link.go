@@ -15,19 +15,6 @@ type LinkElement struct {
 
 func (e *LinkElement) Render(w io.Writer, ctx RenderContext) error {
 	var textRendered bool
-	if len(e.Text) > 0 && e.Text != e.URL {
-		textRendered = true
-
-		el := &BaseElement{
-			Token: e.Text,
-			Style: ctx.options.Styles.LinkText,
-		}
-		err := el.Render(w, ctx)
-		if err != nil {
-			return err
-		}
-	}
-
 	/*
 		if node.LastChild != nil {
 			if node.LastChild.Type == bf.Image {
@@ -51,21 +38,24 @@ func (e *LinkElement) Render(w io.Writer, ctx RenderContext) error {
 			}
 		}
 	*/
+	if len(e.Text) > 0 && e.Text != e.URL {
+		textRendered = true
+	}
 
 	u, err := url.Parse(e.URL)
 	if err == nil &&
 		"#"+u.Fragment != e.URL { // if the URL only consists of an anchor, ignore it
-		pre := " "
 		style := ctx.options.Styles.Link
 		if !textRendered {
-			pre = ""
 			style.BlockPrefix = ""
 			style.BlockSuffix = ""
 		}
 
+		var url = resolveRelativeURL(e.BaseURL, e.URL)
 		el := &BaseElement{
-			Token:  resolveRelativeURL(e.BaseURL, e.URL),
-			Prefix: pre,
+			Token:  url,
+			Prefix: "\u001b]8;;",
+			Suffix: "\u001b\\",
 			Style:  style,
 		}
 		err := el.Render(w, ctx)
@@ -73,6 +63,21 @@ func (e *LinkElement) Render(w io.Writer, ctx RenderContext) error {
 			return err
 		}
 	}
+
+	if len(e.Text) > 0 && e.Text != e.URL {
+		style := ctx.options.Styles.LinkText
+
+		el := &BaseElement{
+			Token: e.Text,
+			Style: style,
+			Suffix: "\u001b]8;;\u001b\\",
+		}
+		err := el.Render(w, ctx)
+		if err != nil {
+			return err
+		}
+	}
+
 
 	return nil
 }
