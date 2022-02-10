@@ -107,7 +107,7 @@ func (e *CodeBlockElement) Render(w io.Writer, ctx RenderContext) error {
 
 	if len(theme) > 0 {
 		renderText(iw, ctx.options.ColorProfile, bs.Current().Style.StylePrimitive, rules.BlockPrefix)
-		err := quick.Highlight(iw, e.Code, e.Language, "terminal256", theme)
+		err := quick.Highlight(iw, e.Code, e.Language, "terminal16", theme)
 		if err != nil {
 			return err
 		}
